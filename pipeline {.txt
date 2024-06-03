@@ -1,0 +1,29 @@
+   pipeline {
+agent any
+environment {
+CONTAINER_IMAGE = 'nginx'
+}
+stages {
+stage('Checkout') {
+steps {
+checkout scm
+}
+}
+stage('Build Docker Image') {
+steps {
+script {
+// Build your Docker image
+sh 'docker build -t $CONTAINER_IMAGE .'
+}
+}
+}
+stage('Scan with Trivy') {
+steps {
+script {
+// Scan the Docker image with Trivy
+sh "trivy --exit-code 1 --severity HIGH,CRITICAL --no-progress $CONTAINER_IMAGE"
+}
+}
+}
+}
+}
